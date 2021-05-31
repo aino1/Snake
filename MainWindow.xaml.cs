@@ -60,6 +60,7 @@ namespace TheTrueSnakes
             public
                 List<Base> SnakesBases = new List<Base>();
             bool IsChange = false;
+            bool IsDelete = false;
             public Snake()
             {
                 Base S = new Base();
@@ -69,6 +70,8 @@ namespace TheTrueSnakes
                 Point Coordinates4 = new Point(70, 0);
                 Point Coordinates5 = new Point(90, 0);
                 Point Coordinates6 = new Point(110, 0);
+                Point Coordinates7 = new Point(130, 0);
+                Point Coordinates8 = new Point(150, 0);
                 S.Diraction = "RIGHT";
 
                 S.SnakesPoints.Add(Coordinates);
@@ -77,10 +80,26 @@ namespace TheTrueSnakes
                 S.SnakesPoints.Add(Coordinates4);
                 S.SnakesPoints.Add(Coordinates5);
                 S.SnakesPoints.Add(Coordinates6);
+                S.SnakesPoints.Add(Coordinates7);
+                S.SnakesPoints.Add(Coordinates8);
 
                 SnakesBases.Add(S);
-
-
+            }
+            public  string Info()
+            {
+                string Intro="";
+                for(int i = 0; i < SnakesBases.Count; i++)
+                {
+                    Intro = Convert.ToString(i) + "Звено " + '\n';
+                    
+                    for(int j = 0; j < SnakesBases[i].SnakesPoints.Count; j++)
+                    {
+                        Intro += Convert.ToString(SnakesBases[i].SnakesPoints[j].X)+"  ";
+                        Intro += Convert.ToString(SnakesBases[i].SnakesPoints[j].Y) + "  " + '\n';
+                    }
+                    
+                }
+                return Intro;
             }
             public void MoveToDiraction()
             {
@@ -91,7 +110,7 @@ namespace TheTrueSnakes
                     for(int i = SnakesBases.Count - 2; i >= 0; i--)
                     {
                         SnakesBases[i].MoveBase();
-                        SnakesBases[i+1].SnakesPoints.Add(SnakesBases[i].SnakesPoints[SnakesBases[i].SnakesPoints.Count-1]);
+                        SnakesBases[i+1].SnakesPoints.Insert(0,SnakesBases[i].SnakesPoints[SnakesBases[i].SnakesPoints.Count-1]);
                         SnakesBases[i].SnakesPoints.RemoveAt(SnakesBases[i].SnakesPoints.Count - 1);
                     }
                 }
@@ -101,10 +120,9 @@ namespace TheTrueSnakes
                 CheckOnVoid();
                 if (IsChange == true)
                 {
-                   
-                    
-                        SnakesBases[SnakesBases.Count - 1].SnakesPoints.Reverse();
-                 
+                        ///SnakesBases[SnakesBases.Count - 1].SnakesPoints.Reverse();
+                        ///if(SnakesBases.Count == 3)
+                        ///SnakesBases[SnakesBases.Count - 2].SnakesPoints.Reverse();
                 }
                 else
                     IsChange = true;
@@ -114,13 +132,22 @@ namespace TheTrueSnakes
                 s.SnakesPoints.Add(SnakesBases[SnakesBases.Count - 1].SnakesPoints[t-1]);
                 SnakesBases[SnakesBases.Count - 1].SnakesPoints.RemoveAt(SnakesBases[SnakesBases.Count - 1].SnakesPoints.Count-1 );
                 SnakesBases.Add(s);
+                //if(IsChange)
+                ///    SnakesBases[SnakesBases.Count - 2].SnakesPoints.Reverse();
             }
             public void CheckOnVoid()
             {
-                if (SnakesBases[SnakesBases.Count - 1].SnakesPoints.Count == 0) 
-                     SnakesBases.Remove(SnakesBases[SnakesBases.Count - 1]);
-                    if (SnakesBases[0].SnakesPoints.Count == 0) 
-                     SnakesBases.Remove(SnakesBases[0]);
+                if (SnakesBases[SnakesBases.Count - 1].SnakesPoints.Count == 0)
+                {
+                    SnakesBases.Remove(SnakesBases[SnakesBases.Count - 1]);
+                    IsDelete = true;
+                }
+
+                if (SnakesBases[0].SnakesPoints.Count == 0)
+                {
+                    IsDelete = true;
+                    SnakesBases.Remove(SnakesBases[0]);
+                }
             }
 
         }
@@ -135,7 +162,7 @@ namespace TheTrueSnakes
         Snake FirstSnake = new Snake();
         public MainWindow()
         {  
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timer.IsEnabled = true;
 
             InitializeComponent();
@@ -147,13 +174,13 @@ namespace TheTrueSnakes
 
         void DrawPlain(object sender, object e)
         {
-            
-            FirstSnake.MoveToDiraction();
             if (IsChange)
             {
                 FirstSnake.ChangeDirection(D);
                 IsChange = false;
             }
+            FirstSnake.MoveToDiraction();
+            Test.Text = FirstSnake.Info();
             GamePlain.Children.Clear();
             ///Создаём новую змейку
             for (int i = 0; i < FirstSnake.SnakesBases.Count; i++)
@@ -172,6 +199,7 @@ namespace TheTrueSnakes
                         GamePlain.Children.Add(Ro);
                     }
                 }
+
             }
             ///Конец создания змейки
             Rectangle R = new Rectangle();
